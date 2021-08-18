@@ -5,20 +5,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import com.nischay.weather.databinding.FragmentProfileBinding
 
-class BlankFragment : Fragment() {
+class ProfileFragment : Fragment() {
+
+    private lateinit var binding: FragmentProfileBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_blank, container, false)
-    }
-
-    companion object {
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance() =
-            BlankFragment()
+        return binding.root
     }
 }
