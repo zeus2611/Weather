@@ -3,17 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <FrameLayout
-        android:background="@android:color/holo_blue_bright"
+        android:background="@drawable/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MapFragment">
-
-        <!-- TODO: Update blank fragment layout -->
-        <TextView
-            android:id="@+id/text2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment" />
+        tools:context=".search.MapFragment">
 
     </FrameLayout>
 

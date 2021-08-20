@@ -1,4 +1,4 @@
-package com.nischay.weather
+package com.nischay.weather.search
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import com.google.android.gms.maps.model.LatLng
+import com.nischay.weather.R
 import com.nischay.weather.databinding.FragmentMapBinding
 
 class MapFragment : Fragment() {
@@ -18,9 +18,6 @@ class MapFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
 
-//        binding.text2.text = MainActivity.location.longitude.toString()
-
-        // Inflate the layout for this fragment
         return binding.root
     }
 

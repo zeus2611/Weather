@@ -2,83 +2,50 @@ package com.nischay.weather
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.etebarian.meowbottomnavigation.MeowBottomNavigation
-import com.google.android.gms.location.FusedLocationProviderClient
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
+import com.nischay.weather.data.Repository
 import com.nischay.weather.databinding.ActivityMainBinding
-import com.nischay.weather.homescreen.HomeFragment
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var viewModel: MainViewModel
-
-    //VARIABLES
-    private var lastKnownLocation: Location? = null
-    private var locationPermissionGranted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        val repository = Repository()
+        val viewModelFactory = MainViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
-        // Setting Up Bottom Nav
         setUpBottomNav()
 
-        binding.bottomNav.setOnClickMenuListener {
-            when(it.id){
-                1 ->{
-                    Toast.makeText(this@MainActivity, "Home", Toast.LENGTH_SHORT).show()
-                    replaceFragment(HomeFragment())
-                }
-
-                2 ->{
-                    Toast.makeText(this@MainActivity, "Profile", Toast.LENGTH_SHORT).show()
-                    replaceFragment(MapFragment())
-                }
-
-                3 -> {
-                    Toast.makeText(this@MainActivity, "Profile", Toast.LENGTH_SHORT).show()
-                    replaceFragment(ProfileFragment())
-                }
-                else ->{
-                    Toast.makeText(this@MainActivity, "Home", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        viewModel.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         getLocationPermission()
-        getDeviceLocation()
+        viewModel.getDeviceLocation()
     }
 
     private fun setUpBottomNav() {
-        binding.bottomNav.add(MeowBottomNavigation.Model(1, R.drawable.ic_home))
-        binding.bottomNav.add(MeowBottomNavigation.Model(2, R.drawable.ic_search))
-        binding.bottomNav.add(MeowBottomNavigation.Model(3, R.drawable.ic_profile))
+        val navHostFragment = supportFragmentManager.findFragmentById(
+            R.id.navHost
+        ) as NavHostFragment
+        navController = navHostFragment.navController
 
-        binding.bottomNav.show(1,true)
-        replaceFragment(HomeFragment())
-    }
+        binding.bottomNav.setupWithNavController(navController)
 
-    private fun replaceFragment(fragment: Fragment){
-        val fragmentTransition = supportFragmentManager.beginTransaction()
-        fragmentTransition.replace(R.id.fragmentContainer, fragment).addToBackStack(fragment::class.java.simpleName).commit()
     }
 
     private fun getLocationPermission() {
@@ -90,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this.applicationContext,
                 Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
-            locationPermissionGranted = true
+            viewModel.locationPermissionGranted = true
         } else {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
@@ -103,52 +70,23 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        locationPermissionGranted = false
+        viewModel.locationPermissionGranted = false
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
 
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    locationPermissionGranted = true
-                    getDeviceLocation()
+                    viewModel.locationPermissionGranted = true
+                    Log.d("MainActivity", "Permission Got")
+                    viewModel.getDeviceLocation()
                 }
             }
-        }
-    }
-
-    private fun getDeviceLocation() {
-        /*
-         * Get the best and most recent location of the device, which may be null in rare
-         * cases when a location is not available.
-         */
-        try {
-            if (locationPermissionGranted) {
-                val locationResult = fusedLocationProviderClient.lastLocation
-                locationResult.addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Set the map's camera position to the current location of the device.
-                        lastKnownLocation = task.result
-                        if (lastKnownLocation != null) {
-                            Log.d(TAG, "Location found: " + lastKnownLocation!!.latitude.toString() + " " + lastKnownLocation!!.longitude.toString())
-                            viewModel.loc.value = LatLng(
-                                lastKnownLocation!!.latitude,
-                                lastKnownLocation!!.longitude
-                            )
-                        }
-                    } else {
-                        Log.d(TAG, "Current location is null. Using defaults.")
-                        Log.e(TAG, "Exception: %s", task.exception)
-                    }
-                }
-            }
-        } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
         }
     }
 
     companion object {
-        private val TAG = MainActivity::class.java.simpleName
+        val TAG: String = MainActivity::class.java.simpleName
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
     }
 }
