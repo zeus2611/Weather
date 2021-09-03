@@ -10,5 +10,6 @@ data class Current(
     val visibility: Int,
     val wind: Wind,
     val sys: Sys,
-    val name: String
+    val name: String,
+    val timezone: Int
 )

@@ -31,11 +31,6 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
 
         setUpBottomNav()
-
-        viewModel.fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        getLocationPermission()
-        viewModel.getDeviceLocation()
     }
 
     private fun setUpBottomNav() {
@@ -48,45 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
-        if (ContextCompat.checkSelfPermission(this.applicationContext,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
-            viewModel.locationPermissionGranted = true
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        viewModel.locationPermissionGranted = false
-        when (requestCode) {
-            PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    viewModel.locationPermissionGranted = true
-                    Log.d("MainActivity", "Permission Got")
-                    viewModel.getDeviceLocation()
-                }
-            }
-        }
-    }
-
     companion object {
         val TAG: String = MainActivity::class.java.simpleName
-        private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
     }
 }

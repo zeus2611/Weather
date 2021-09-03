@@ -77,13 +77,16 @@ dependencies {
     // Coil
     implementation "io.coil-kt:coil:1.1.1"
 
-    //Coroutines
+    // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
 
     implementation 'androidx.activity:activity-ktx:1.3.1'
     implementation 'androidx.fragment:fragment-ktx:1.3.6'
 
-    //MP Charts
-//    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    // Swiper Refresh Layout
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // Easy Permissions KTX
+    implementation 'com.vmadalin:easypermissions-ktx:0.1.0'
 }

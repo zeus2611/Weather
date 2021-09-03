@@ -1,17 +1,25 @@
 package com.nischay.weather.util
 
 import java.text.SimpleDateFormat
-import java.util.*
+import kotlin.math.round
 
 object Utils {
-    fun getTime(s: String): String? {
-        return try {
-            val sdf = SimpleDateFormat("HH:mm")
-            val netDate = Date(s.toLong() * 1000)
-            sdf.format(netDate)
-        } catch (e: Exception) {
-            e.toString()
-        }
+    fun getDay(epoch: Long): String {
+        val simpleDateFormat = SimpleDateFormat("EEEE")
+
+        return simpleDateFormat.format(epoch).toString()
+    }
+
+    fun getDate(epoch: Long): String {
+        val simpleDateFormat = SimpleDateFormat("dd LLL.")
+
+        return simpleDateFormat.format(epoch).toString()
+    }
+
+    fun getTime(epoch: Long): String {
+        val simpleDateFormat = SimpleDateFormat("KK:mm aaa")
+
+        return simpleDateFormat.format(epoch).toString()
     }
 
     fun tempKtoC(temp: Double): Int {
@@ -34,9 +42,11 @@ object Utils {
         }
     }
 
-    fun speedMtoKM(){}
+    fun mToKm(distance: Int): Int {
+        return distance/1000
+    }
 
-    fun mTokm() {
-
+    fun hPaToBar(pressure: Int): Float {
+        return round((pressure/1000.0)).toFloat()
     }
 }
